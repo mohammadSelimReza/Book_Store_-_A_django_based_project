@@ -21,6 +21,12 @@ class BookModel(models.Model):
     
     def __str__(self) -> str:
         return self.title
+    @property
+    def average_rating(self):
+        reviews = self.review.all()
+        if reviews:
+            return sum(review.rating for review in reviews) / reviews.count()
+        return 0
     
 class BookReview(models.Model):
     user = models.ForeignKey(User,related_name='review',on_delete=models.CASCADE)
