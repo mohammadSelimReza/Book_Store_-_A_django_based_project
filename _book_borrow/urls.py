@@ -24,6 +24,7 @@ urlpatterns = [
     path('',include('library_app.urls')),
     path('browse/',include('library_book.urls')),
     path('user/',include('library_user.urls')),
+    path('accounts/',include('library_transactions.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL,
                       document_root=settings.MEDIA_ROOT)
