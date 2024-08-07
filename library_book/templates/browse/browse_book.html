@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block main %}
+<section class="container mx-auto mt-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for book in bookmodel_list %}
+        <div class="group relative bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <a href="#">
+                <img class="w-full h-48 object-cover rounded-t-lg" src="{{book.image.url}}" alt="{{ book.title }}" />
+            </a>
+            <div class="p-5">
+                <a href="#">
+                    <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{{ book.title }}</h5>
+                </a>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ book.description|truncatewords:10 }}</p>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-lg font-semibold text-gray-900 dark:text-white">BDT {{ book.borrowing_price }}TK</span>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg space-x-2">
+                    <a href="#" class="text-center inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Click To Borrow
+                    </a>
+                    <a href="#" class="text-center inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock main %}

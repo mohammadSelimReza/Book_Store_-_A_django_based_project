@@ -1,1 +1,6 @@
 {% extends "base.html" %}
+
+{% block main %}
+  <h1 class="text-center text-xl">Found: {{user.username}} </h1>
+  <h2 class="text-center text-xl">Found: {{user.account.account_no}} </h2>
+{% endblock main %}
