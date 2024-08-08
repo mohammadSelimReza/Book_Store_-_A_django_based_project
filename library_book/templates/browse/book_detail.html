@@ -40,8 +40,10 @@
                 <span class="text-xl font-semibold text-gray-900">TK. {{ book.borrowing_price }}</span>
             </div>
             <div class="flex items-center gap-4 mb-4">
-                <button class="bg-gray-200 text-gray-900 font-semibold px-4 py-2 rounded-lg focus:outline-none">Want to read</button>
-                <button class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none">Add to Cart</button>
+                <form action="{% url 'borrow_book' book.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="text-center inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Click To Borrow</button>
+                </form>    
             </div>
             <div>
                 <h2 class="text-xl font-bold mb-2">Description</h2>

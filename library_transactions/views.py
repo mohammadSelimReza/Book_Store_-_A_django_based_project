@@ -4,7 +4,7 @@ from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, ListView, View
 from django.db import models
-from .models import TransactionModel
+from .models import TransactionModel,BorrowedBooksModel
 from .forms import DepositForm, WithdrawForm
 from .constrant import DEPOSIT,WITHDRAWAL
 from django.contrib import messages
@@ -14,6 +14,7 @@ from django.urls import reverse_lazy
 from library_user.models import UserDetailsModel
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from library_book.models import BookModel
 # Create your views here.
 class TransactionCreateMixin(LoginRequiredMixin, CreateView):
     template_name = 'transaction_form.html'
@@ -87,3 +88,47 @@ class WithdrawMoneyView(TransactionCreateMixin):
         account.save(update_fields=['balance'])
         messages.success(self.request, f"{amount}$ was withdrawn from your account successfully.")
         return super().form_valid(form)
+
+def BorrowBook(request, book_id):
+    book = get_object_or_404(BookModel, id=book_id)
+    user_account = request.user.account
+
+    if BorrowedBooksModel.objects.filter(user=request.user, book=book, is_borrow=True).exists():
+        messages.error(request, "You have already borrowed this book.")
+    else:
+        user_balance = user_account.balance
+        book_price = book.borrowing_price
+
+        if user_balance >= book_price:
+            user_balance -= book_price
+            user_account.balance = user_balance
+            user_account.save(update_fields=['balance'])
+
+            BorrowedBooksModel.objects.create(user=request.user, book=book, is_borrow=True)
+            messages.success(request, f"You have successfully borrowed {book.title}.")
+        else:
+            messages.error(request, "You do not have enough balance to borrow this book.")
+    
+    return redirect('borrowed_books')
+
+class BorrowBookView(LoginRequiredMixin,ListView):
+    model=BorrowedBooksModel
+    template_name='borrowed_report.html'
+    context_object_name='borrowed_books'
+    
+    def get_queryset(self):
+        return BorrowedBooksModel.objects.filter(user=self.request.user)
+    
+def ReturnBookView(request, borrowed_book_id):
+    borrowed_book = get_object_or_404(BorrowedBooksModel, id=borrowed_book_id, user=request.user)
+    
+    if borrowed_book.is_borrow:
+        borrowed_book.is_borrow = False
+        borrowed_book.save()
+        book = borrowed_book.book
+        price = book.borrowing_price
+        user_details = get_object_or_404(UserDetailsModel, user=request.user)
+        user_details.balance += price
+        user_details.save()
+    
+    return redirect('borrowed_books')
