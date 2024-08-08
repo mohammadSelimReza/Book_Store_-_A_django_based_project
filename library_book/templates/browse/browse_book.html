@@ -1,33 +1,102 @@
 {% extends "base.html" %}
 
 {% block main %}
-<section class="container mx-auto mt-10">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {% for book in bookmodel_list %}
-        <div class="group relative bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-                <img class="w-full h-48 object-cover rounded-t-lg" src="{{book.image.url}}" alt="{{ book.title }}" />
-            </a>
-            <div class="p-5">
-                <a href="#">
-                    <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{{ book.title }}</h5>
-                </a>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ book.description|truncatewords:10 }}</p>
-                <p class="text-lg text-center font-semibold text-gray-900 dark:text-white">BDT {{ book.borrowing_price }}TK</p>
-                
-                <p class="text-lg text-center font-semibold text-gray-900 dark:text-white">{{ book.id }}</p>
-                <div class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg space-x-2">
-                    <form action="{% url 'borrow_book' book.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="text-center inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Click To Borrow</button>
-                    </form>
-                    <a href="{% url 'bookDetail' book.slug %}" class="text-center inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                        View Details
-                    </a>
-                </div>
-            </div>
+<section class="container mx-auto mt-10 flex flex-col lg:flex-row gap-6">
+  <div class="side-bar w-full lg:w-1/4">
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-lg font-semibold mb-4">Shop by Categories</h3>
+      <form method="get" action="#">
+        <div class="h-64 overflow-y-scroll">
+            <div class="flex items-center mb-4">
+                <input
+                  id="all-categories"
+                  type="radio"
+                  value=""
+                  name="category"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  for="all-categories"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >All Categories</label>
+              </div>
+      
+              {% for category in categories %}
+              <div class="flex items-center mb-4">
+                <input
+                  id="category-{{ category.id }}"
+                  type="radio"
+                  value="{{ category.id }}"
+                  name="category"
+                  {% if request.GET.category == category.id|stringformat:"s" %}checked{% endif %}
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  for="category-{{ category.id }}"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >{{ category.name }}</label>
+              </div>
+              {% endfor %}
         </div>
-        {% endfor %}
+        <div class="flex justify-between items-center px-4 ">
+            <button
+            type="submit"
+            class="text-center inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Apply Filter
+          </button>
+          <a
+            href="{% url 'bookList' %}"
+            class="block mt-4 text-center text-blue-600 hover:text-blue-800"
+          >
+            Reset Filter
+          </a>
+        </div>
+      </form>
     </div>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 lg:w-3/4">
+    {% for book in bookmodel_list %}
+    <div class="group relative bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+      <a href="#">
+        <img
+          class="w-full h-48 object-cover rounded-t-lg"
+          src="{{ book.image.url }}"
+          alt="{{ book.title }}"
+        />
+      </a>
+      <div class="p-5">
+        <a href="{% url 'bookDetail' book.slug %}">
+          <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+            {{ book.title }}
+          </h5>
+        </a>
+        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+          {{ book.description|truncatewords:10 }}
+        </p>
+        <p class="text-lg text-center font-semibold text-gray-900 dark:text-white">
+          BDT {{ book.borrowing_price }}TK
+        </p>
+        <div class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg space-x-2">
+          <form action="{% url 'borrow_book' book.id %}" method="post">
+            {% csrf_token %}
+            <button
+              type="submit"
+              class="text-center inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Click To Borrow
+            </button>
+          </form>
+          <a
+            href="{% url 'bookDetail' book.slug %}"
+            class="text-center inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+          >
+            View Details
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 </section>
 {% endblock main %}
