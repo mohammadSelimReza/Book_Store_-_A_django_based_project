@@ -104,35 +104,38 @@ class WithdrawMoneyView(TransactionCreateMixin):
         return super().form_valid(form)
 
 def BorrowBook(request, book_id):
-    book = get_object_or_404(BookModel, id=book_id)
-    user_account = request.user.account
+    if request.user.is_authenticated:
+        book = get_object_or_404(BookModel, id=book_id)
+        user_account = request.user.account
 
-    if BorrowedBooksModel.objects.filter(user=request.user, book=book, is_borrow=True).exists():
-        messages.error(request, "You have already borrowed this book.")
-    else:
-        user_balance = user_account.balance
-        book_price = book.borrowing_price
-
-        if user_balance >= book_price:
-            user_balance -= book_price
-            user_account.balance = user_balance
-            user_account.save(update_fields=['balance'])
-            mail_subject = "Book Borrow Confirmation"
-            message = render_to_string('email_msg.html',{
-                'user': request.user,
-                'book': book,
-                'type':'borrow',
-            })
-            to_email = request.user.email
-            send_email = EmailMultiAlternatives(mail_subject,'',to=[to_email])
-            send_email.attach_alternative(message,"text/html")
-            send_email.send()
-            BorrowedBooksModel.objects.create(user=request.user, book=book, is_borrow=True)
-            messages.success(request, f"You have successfully borrowed {book.title}.")
+        if BorrowedBooksModel.objects.filter(user=request.user, book=book, is_borrow=True).exists():
+            messages.error(request, "You have already borrowed this book.")
         else:
-            messages.error(request, "You do not have enough balance to borrow this book.")
-    
-    return redirect('borrowed_books')
+            user_balance = user_account.balance
+            book_price = book.borrowing_price
+
+            if user_balance >= book_price:
+                user_balance -= book_price
+                user_account.balance = user_balance
+                user_account.save(update_fields=['balance'])
+                mail_subject = "Book Borrow Confirmation"
+                message = render_to_string('email_msg.html',{
+                    'user': request.user,
+                    'book': book,
+                    'type':'borrow',
+                })
+                to_email = request.user.email
+                send_email = EmailMultiAlternatives(mail_subject,'',to=[to_email])
+                send_email.attach_alternative(message,"text/html")
+                send_email.send()
+                BorrowedBooksModel.objects.create(user=request.user, book=book, is_borrow=True)
+                messages.success(request, f"You have successfully borrowed {book.title}.")
+            else:
+                messages.error(request, "You do not have enough balance to borrow this book.")
+        
+        return redirect('borrowed_books')
+    else:
+        return redirect('login')
 
 class BorrowBookView(LoginRequiredMixin,ListView):
     model=BorrowedBooksModel
