@@ -2,8 +2,11 @@ from typing import Any
 from django.shortcuts import render,redirect,get_object_or_404
 from .models import BookModel,BookReview
 from library_book.models import CategoryModel
-from django.views.generic import ListView,DetailView
+from django.views.generic import ListView,DetailView,CreateView
 from .forms import ReviewForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.urls import reverse_lazy
 # Create your views here.
 class BookListView(ListView):
     template_name = 'browse/browse_book.html'
@@ -56,3 +59,16 @@ class BookDetailView(DetailView):
             return redirect('bookDetail', slug=book.slug)
         return self.get(request, *args, **kwargs)           
     
+class BookReviewView(LoginRequiredMixin, CreateView):
+    model = BookReview
+    form_class = ReviewForm
+    template_name = 'review/review_form.html'
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.book = get_object_or_404(BookModel, id=self.kwargs['book_id'])
+        messages.success(self.request, "Thank you for your review!")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('bookDetail', kwargs={'slug': self.object.book.slug})

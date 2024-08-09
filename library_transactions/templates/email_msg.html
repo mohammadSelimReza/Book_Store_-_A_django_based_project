@@ -1,1 +1,13 @@
-<h1>You have done this.</h1>
+{% if type == 'transaction' %}
+    <h1>Hello {{ user.first_name }} {{ user.last_name }},</h1>
+    <p>Your account has been {{ method }} by {{ amount }}. Your new balance is {{ user.account.balance }}.</p>
+    <p>Thank you for using Book Borrow Store.</p>
+{% elif type == 'borrow' %}
+    <h1>Hello {{ user.first_name }} {{ user.last_name }},</h1>
+    <p>You have borrowed "{{ book.title }}" and BDT {{ book.borrowing_price }}Tk has been debited from your account.</p>
+    <p>Thank you for using Book Borrow Store.</p>
+{% elif type == 'return' %}
+    <h1>Hello {{ user.first_name }} {{ user.last_name }},</h1>
+    <p>You have returned "{{ book.title }}". BDT {{ book.borrowing_price }}Tk has been credited back to your account.</p>
+    <p>Thank you for using Book Borrow Store.</p>
+{% endif %}

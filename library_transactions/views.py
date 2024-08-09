@@ -12,7 +12,7 @@ from datetime import datetime
 from django.db.models import Sum
 from django.urls import reverse_lazy
 from library_user.models import UserDetailsModel
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage,EmailMultiAlternatives
 from django.template.loader import render_to_string
 from library_book.models import BookModel
 # Create your views here.
@@ -58,9 +58,12 @@ class DepositMoneyView(TransactionCreateMixin):
         message = render_to_string('email_msg.html',{
             'user': self.request.user,
             'amount': amount,
+            'method':'credited',
+            'type':'transaction',
         })
         to_email = self.request.user.email
-        send_email = EmailMessage(mail_subject,message,to=[to_email])
+        send_email = EmailMultiAlternatives(mail_subject,'',to=[to_email])
+        send_email.attach_alternative(message,"text/html")
         send_email.send()
         return super().form_valid(form)
 
@@ -87,6 +90,17 @@ class WithdrawMoneyView(TransactionCreateMixin):
         account.balance -= amount
         account.save(update_fields=['balance'])
         messages.success(self.request, f"{amount}$ was withdrawn from your account successfully.")
+        mail_subject = "Withdraw Message"
+        message = render_to_string('email_msg.html',{
+            'user': self.request.user,
+            'amount': amount,
+            'method':'debited',
+            'type':'transaction',
+        })
+        to_email = self.request.user.email
+        send_email = EmailMultiAlternatives(mail_subject,'',to=[to_email])
+        send_email.attach_alternative(message,"text/html")
+        send_email.send()
         return super().form_valid(form)
 
 def BorrowBook(request, book_id):
@@ -103,7 +117,16 @@ def BorrowBook(request, book_id):
             user_balance -= book_price
             user_account.balance = user_balance
             user_account.save(update_fields=['balance'])
-
+            mail_subject = "Book Borrow Confirmation"
+            message = render_to_string('email_msg.html',{
+                'user': request.user,
+                'book': book,
+                'type':'borrow',
+            })
+            to_email = request.user.email
+            send_email = EmailMultiAlternatives(mail_subject,'',to=[to_email])
+            send_email.attach_alternative(message,"text/html")
+            send_email.send()
             BorrowedBooksModel.objects.create(user=request.user, book=book, is_borrow=True)
             messages.success(request, f"You have successfully borrowed {book.title}.")
         else:
@@ -130,5 +153,16 @@ def ReturnBookView(request, borrowed_book_id):
         user_details = get_object_or_404(UserDetailsModel, user=request.user)
         user_details.balance += price
         user_details.save()
-    
+        mail_subject = "Book Return Confirmation"
+        message = render_to_string('email_msg.html', {
+            'user': request.user,
+            'book': book,
+            'type': 'return',
+        })
+        to_email = request.user.email
+        send_email = EmailMultiAlternatives(mail_subject, '', to=[to_email])
+        send_email.attach_alternative(message, "text/html")
+        send_email.send()
+        return redirect('review_book', book_id=book.id)
     return redirect('borrowed_books')
+
