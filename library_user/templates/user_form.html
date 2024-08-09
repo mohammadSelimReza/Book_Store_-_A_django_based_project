@@ -1,75 +1,75 @@
 {% extends "base.html" %}
 
 {% block main %}
-  <section class="w-2/3 mx-auto">
+  <section class="w-full max-w-4xl mx-auto px-4 py-6">
     <!-- non-field error -->
     {% if form.non_field_errors %}
-      {% for error in form.non_field_errors %}
-        <p>Error!</p>
-        <p>{{error}} </p>
-      {% endfor %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <p class="font-bold">Error!</p>
+        {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
     {% endif %}
     <!-- done -->
-    <form method="post" novalidate>
+    <form method="post" novalidate class="space-y-6">
       {% csrf_token %}
-        {% for hidden_field in form.hidden_fields %}
-          {{hidden_field.errors}}
-          {{hidden_field}}
-        {% endfor %}
+      {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field.errors }}
+        {{ hidden_field }}
+      {% endfor %}
       <div class="grid gap-6 mb-6 md:grid-cols-2">
-          <div>
-              <!-- 1 -->
-              <label for="form.first_name.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.first_name.label}}</label>
-              {{form.first_name}}  
-            </div>
-          <div>
-            <!-- 2 -->
-              <label for="form.last_name.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.last_name.label}}</label>
-              {{form.last_name}}  
-            </div>
-          <div>
-            <!-- 3 -->
-              <label for="form.username.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.username.label}}</label>
-              {{form.username}}  
-            </div>
-          <div>
-            <label for="form.email.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.email.label}}</label>
-            {{form.email}}  
-          </div>
-          <div>
-              <label for="form.birth_date.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.birth_date.label}}</label>
-              {{form.birth_date}}  
-          </div>
-          <div>
-              <label for="form.gender.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.gender.label}}</label>
-              {{form.gender}}
-          </div>
-          <div>
-            <label for="form.password1.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.password1.label}}</label>
-            {{form.password1}}  
-          </div>
-          <div>
-            <label for="form.password2.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.password2.label}}</label>
-            {{form.password2}}  
-          </div>
-          
+        <div>
+          <!-- 1 -->
+          <label for="form.first_name.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.first_name.label }}</label>
+          {{ form.first_name }}
+        </div>
+        <div>
+          <!-- 2 -->
+          <label for="form.last_name.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.last_name.label }}</label>
+          {{ form.last_name }}
+        </div>
+        <div>
+          <!-- 3 -->
+          <label for="form.username.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.username.label }}</label>
+          {{ form.username }}
+        </div>
+        <div>
+          <label for="form.email.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.email.label }}</label>
+          {{ form.email }}
+        </div>
+        <div>
+          <label for="form.birth_date.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.birth_date.label }}</label>
+          {{ form.birth_date }}
+        </div>
+        <div>
+          <label for="form.gender.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.gender.label }}</label>
+          {{ form.gender }}
+        </div>
+        <div>
+          <label for="form.password1.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.password1.label }}</label>
+          {{ form.password1 }}
+        </div>
+        <div>
+          <label for="form.password2.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.password2.label }}</label>
+          {{ form.password2 }}
+        </div>
       </div>
       <div class="mb-6">
-          <label for="form.address.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.address.label}}</label>
-          {{form.address}}    
-      </div> 
+        <label for="form.address.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.address.label }}</label>
+        {{ form.address }}
+      </div>
       <div class="mb-6">
-          <label for="form.country.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{form.country.label}}</label>
-          {{form.country}}    
+        <label for="form.country.id_for_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.country.label }}</label>
+        {{ form.country }}
       </div>
       <div class="flex items-start mb-6">
-          <div class="flex items-center h-5">
+        <div class="flex items-center h-5">
           <input id="remember" type="checkbox" value="" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" required />
-          </div>
-          <label for="form.birth_date.id_for_label" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a href="#" class="text-blue-600 hover:underline dark:text-blue-500">terms and conditions</a>.</label>
+        </div>
+        <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a href="#" class="text-blue-600 hover:underline dark:text-blue-500">terms and conditions</a>.</label>
       </div>
       <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create an account</button>
     </form>
-
   </section>
 {% endblock main %}

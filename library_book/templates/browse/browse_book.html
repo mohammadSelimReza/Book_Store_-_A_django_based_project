@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
 {% block main %}
-<h3 class="text-center">View Books</h3>
-<section class="container mx-auto mt-10 flex flex-col lg:flex-row gap-6">
-  <div class="side-bar w-full lg:w-1/4">
+<h3 class="text-center text-2xl font-semibold mb-6">View Books</h3>
+<section class="container mx-auto mt-10 flex flex-col lg:flex-row gap-6 px-4">
+  <!-- Sidebar -->
+  <div class="w-full lg:w-1/4">
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="text-lg font-semibold mb-4">View by Categories</h3>
       <form method="get" action="#">
-        <div class="h-64 overflow-y-scroll">
+        <div class="h-64 overflow-y-auto">
             <div class="flex items-center mb-4">
                 <input
                   id="all-categories"
@@ -20,43 +21,44 @@
                   for="all-categories"
                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                 >All Categories</label>
-              </div>
-      
-              {% for category in categories %}
-              <div class="flex items-center mb-4">
-                <input
-                  id="category-{{ category.id }}"
-                  type="radio"
-                  value="{{ category.id }}"
-                  name="category"
-                  {% if request.GET.category == category.id|stringformat:"s" %}checked{% endif %}
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label
-                  for="category-{{ category.id }}"
-                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >{{ category.name }}</label>
-              </div>
-              {% endfor %}
+            </div>
+            {% for category in categories %}
+            <div class="flex items-center mb-4">
+              <input
+                id="category-{{ category.id }}"
+                type="radio"
+                value="{{ category.id }}"
+                name="category"
+                {% if request.GET.category == category.id|stringformat:"s" %}checked{% endif %}
+                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label
+                for="category-{{ category.id }}"
+                class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              >{{ category.name }}</label>
+            </div>
+            {% endfor %}
         </div>
-        <div class="flex justify-between items-center px-4 ">
+        <div class="flex flex-col lg:flex-row justify-between items-center px-4 mt-4">
             <button
-            type="submit"
-            class="text-center inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Apply Filter
-          </button>
-          <a
-            href="{% url 'bookList' %}"
-            class="block mt-4 text-center text-blue-600 hover:text-blue-800"
-          >
-            Reset Filter
-          </a>
+              type="submit"
+              class="text-center inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Apply Filter
+            </button>
+            <a
+              href="{% url 'bookList' %}"
+              class="block mt-4 lg:mt-0 text-center text-blue-600 hover:text-blue-800"
+            >
+              Reset Filter
+            </a>
         </div>
       </form>
     </div>
   </div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 lg:w-3/4">
+  
+  <!-- Book Grid -->
+  <div class="w-full lg:w-3/4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
     {% for book in bookmodel_list %}
     <div class="group relative bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <a href="#">
@@ -68,11 +70,11 @@
       </a>
       <div class="p-5">
         <a href="{% url 'bookDetail' book.slug %}">
-          <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h5 class="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white">
             {{ book.title }}
           </h5>
         </a>
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+        <p class="mb-3 text-sm text-gray-700 dark:text-gray-400">
           {{ book.description|truncatewords:10 }}
         </p>
         <p class="text-lg text-center font-semibold text-gray-900 dark:text-white">
